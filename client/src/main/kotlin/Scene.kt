@@ -20,12 +20,27 @@ class Scene (
   val fsTextured = Shader(gl, GL.FRAGMENT_SHADER, "textured-fs.glsl")
   val fsBackground = Shader(gl, GL.FRAGMENT_SHADER, "background-fs.glsl")
   val fsEnvmapped = Shader(gl, GL.FRAGMENT_SHADER, "envmapped-fs.glsl")
-
+  val vsWood = Shader(gl, GL.VERTEX_SHADER, "wood-vs.glsl")
+  val fsWood = Shader(gl, GL.FRAGMENT_SHADER, "wood-fs.glsl")
+  
+  val woodProgram = Program(gl, vsWood, fsWood)
   val texturedProgram = Program(gl, vsTextured, fsTextured)
   val backgroundProgram = Program(gl, vsQuad, fsBackground)
   val envmappedProgram = Program(gl, vsTextured, fsEnvmapped)
 
   val texturedQuadGeometry = TexturedQuadGeometry(gl)
+  val sphereGeometry = SphereGeometry(gl, stacks = 32, slices = 64, radius = 0.5f)
+
+  val woodMaterial = Material(woodProgram).apply {
+    this["lightWoodColor"]?.set(Vec3(0.78f, 0.59f, 0.36f))
+    this["darkWoodColor"] ?.set(Vec3(0.46f, 0.29f, 0.17f))
+
+    this["stripeFreq"]?.set(6.0f)
+    this["ambient"]   ?.set(Vec3(0.15f,0.15f,0.15f))
+    this["lightDir"]  ?.set(Vec3(0.0f, -1.0f, -1.0f).normalize())
+  }
+  
+
 
   val gameObjects = ArrayList<GameObject>()
 
@@ -35,7 +50,9 @@ class Scene (
     "media/posz512.jpg", "media/negz512.jpg"
   )  
 
+
   val jsonLoader = JsonLoader()
+  /* 
   val slowpokeMeshes = jsonLoader.loadMeshes(gl,
     "media/slowpoke/slowpoke.json",
     Material(texturedProgram).apply{
@@ -57,15 +74,22 @@ class Scene (
       this["envTexture"]?.set(envTexture)
     }
   )
+  */
 
   val backgroundMaterial = Material(backgroundProgram)
   val backgroundMesh = Mesh(backgroundMaterial, texturedQuadGeometry)
+  val woodBall = GameObject(Mesh(woodMaterial, sphereGeometry)).apply {
+    position.set(0f, 0.5f, 0f)
+  }
+  
 
   init{
     backgroundMaterial["envTexture"]?.set( this.envTexture )
 
-    gameObjects += GameObject(*slowpokeMeshes)
+    //gameObjects += GameObject(*slowpokeMeshes)
     gameObjects += GameObject(backgroundMesh)
+    gameObjects += woodBall
+    println("DEBUG -> " + woodMaterial["lightWoodColor"])
   }
 
   val lights = Array<Light>(8) { Light(it) }

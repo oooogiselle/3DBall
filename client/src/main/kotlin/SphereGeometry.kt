@@ -1,6 +1,5 @@
 import org.khronos.webgl.Float32Array
 import org.khronos.webgl.Uint16Array
-import org.khronos.webgl.WebGL2RenderingContext
 import org.khronos.webgl.WebGLRenderingContext as GL
 import vision.gears.webglmath.Geometry
 import kotlin.math.PI
