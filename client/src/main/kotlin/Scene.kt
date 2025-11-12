@@ -98,6 +98,7 @@ class Scene (
     //gameObjects += GameObject(*slowpokeMeshes)
     //gameObjects += GameObject(backgroundMesh)
     gameObjects += woodBallGO
+    woodBallGO.velocity.set(1.0f, 0.0f, 0.0f)  // Roll along X axis
     gameObjects += backgroundGO
   }
 

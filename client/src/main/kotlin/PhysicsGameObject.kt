@@ -7,7 +7,7 @@ open class PhysicsGameObject(
     vararg meshes : Mesh
 ) : GameObject(*meshes) {
 
-    val velocity = Vec3 ()
+    override var velocity = Vec3 ()
     val acceleration = Vec3 ()
     val force = Vec3 ()
 
@@ -15,7 +15,7 @@ open class PhysicsGameObject(
     var angularAcceleration = 0.0f
     var torque = 0.0f
 
-    var radius = 1.0f
+    override var radius = 1.0f
     var invMass = 1.0f
     var invAngularMass = 1.0f
 
@@ -51,8 +51,11 @@ open class PhysicsGameObject(
                         val restitutionCoeff = 0.9f
                         val impulseLength = collisionNormal.dot(relativeVelocity) / (invMass + it.invMass) * (1.0f + restitutionCoeff)
                         val restitution = collisionNormal * impulseLength
-                        velocity -= restitution * invMass
-                        it.velocity += restitution * it.invMass
+                        velocity.set(velocity - restitution * invMass)     
+                        it.velocity.set(it.velocity + restitution * it.invMass) 
+
+                        // velocity -= restitution * invMass
+                        // it.velocity += restitution * it.invMass
                     }
                 }
             }
@@ -70,14 +73,17 @@ open class PhysicsGameObject(
         control (dt, t, keysPressed, gameObjects)
 
         acceleration.set(force * invMass)
-        velocity += acceleration * dt
-        position += velocity * dt
+        velocity.set(velocity + acceleration * dt)  
+        // velocity += acceleration * dt
+        position.set(position + velocity * dt)     
+        // position += velocity * dt
 
         angularAcceleration = torque * invAngularMass
         angularVelocity += angularAcceleration * dt
         roll += angularVelocity * dt
 
-        velocity *= exp (-dt)
+        velocity.set(velocity * exp(-dt))
+        // velocity *= exp (-dt)
         angularVelocity *= exp (-dt)
 
         collision (dt, t, keysPressed, gameObjects)
