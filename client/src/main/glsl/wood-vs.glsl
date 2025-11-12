@@ -31,5 +31,7 @@ void main(void) {
   worldPosition = vertexPosition * gameObject.modelMatrix;
   gl_Position = worldPosition * camera.viewProjMatrix;
   texCoord = vertexTexCoord;
-  worldNormal = gameObject.modelMatrixInverse * vec4(vertexNormal.xyz, 0);
+  //worldNormal = gameObject.modelMatrixInverse * vec4(vertexNormal.xyz, 0);
+  worldNormal = vec4(vertexNormal.xyz, 0.0) * gameObject.modelMatrix;
+
 }

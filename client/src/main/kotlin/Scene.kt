@@ -38,6 +38,9 @@ class Scene (
     this["stripeFreq"]?.set(6.0f)
     this["ambient"]   ?.set(Vec3(0.15f,0.15f,0.15f))
     this["lightDir"]  ?.set(Vec3(0.0f, -1.0f, -1.0f).normalize())
+    this["noiseFreq"]?.set(10.0f)   // adjust for more/less detail
+    this["noiseAmp"]?.set(0.3f)     // adjust for stronger/weaker perturbation
+    this["noiseExp"]?.set(2.0f)     // adjust for sharper/softer noise
   }
   
   val envTexture = TextureCube(gl,
@@ -86,7 +89,12 @@ class Scene (
 
   val woodSphereMesh    = Mesh(woodMaterial, sphereGeometry)
   val envSphereMesh     = Mesh(envMaterial,  sphereGeometry)
-  val woodBallGO        = GameObject(woodSphereMesh).apply { position.set(0f, 0.5f, 0f) }
+  val woodBallGO        = GameObject(woodSphereMesh).apply {
+    position.set(0f, 0.5f, 0f) 
+    useOrientationMatrix = true
+    radius = 0.5f 
+    orientationMatrix.set() 
+  }
   val envWoodBallGO     = GameObject(envSphereMesh).apply { position.set(1.2f, 0.5f, 0f) } // optional second object
   val backgroundMesh    = Mesh(backgroundMaterial, texturedQuadGeometry)
   val backgroundGO      = GameObject(backgroundMesh)
@@ -98,7 +106,7 @@ class Scene (
     //gameObjects += GameObject(*slowpokeMeshes)
     //gameObjects += GameObject(backgroundMesh)
     gameObjects += woodBallGO
-    woodBallGO.velocity.set(1.0f, 0.0f, 0.0f)  // Roll along X axis
+    //woodBallGO.velocity.set(1.0f, 0.0f, 0.0f)  // Roll along X axis
     gameObjects += backgroundGO
   }
 
@@ -149,6 +157,8 @@ class Scene (
     gl.blendFunc(
       GL.SRC_ALPHA,
       GL.ONE_MINUS_SRC_ALPHA)
+    
+    backgroundGO.position.set(camera.position)
 
     gameObjects.forEach{ it.move(dt, t, keysPressed, gameObjects) }
 
