@@ -1,8 +1,10 @@
 #version 300 es
 precision highp float;
 
-layout(location = 0) in vec3 vertexPosition;  // VAO has 3 floats
-layout(location = 1) in vec3 vertexNormal;    // VAO has 3 floats
+in vec4 vertexPosition;  
+in vec4 vertexNormal;  
+in vec4 vertexTexCoord;
+
 
 uniform struct {
   mat4 modelMatrix;
@@ -14,17 +16,20 @@ uniform struct {
   vec3 position;           // not used here
 } camera;
 
-out vec3 modelPosition;    // EXACT name/type used by wood-fs.glsl
-out vec3 normalW;          // EXACT name/type used by wood-fs.glsl
+uniform struct {
+  float time;
+} scene;
+
+out vec4 modelPosition;    // EXACT name/type used by wood-fs.glsl
+out vec4 worldNormal;          // EXACT name/type used by wood-fs.glsl
+out vec4 worldPosition;
+out vec4 texCoord;
+
 
 void main(void) {
   modelPosition = vertexPosition;
-
-  // world position then to clip (mat * vec)
-  vec4 pw = gameObject.modelMatrix * vec4(vertexPosition, 1.0);
-  gl_Position = camera.viewProjMatrix * pw;
-
-  // proper normal transform: inverse-transpose(model)
-  mat3 nMat = mat3(transpose(gameObject.modelMatrixInverse));
-  normalW = normalize(nMat * vertexNormal);
+  worldPosition = vertexPosition * gameObject.modelMatrix;
+  gl_Position = worldPosition * camera.viewProjMatrix;
+  texCoord = vertexTexCoord;
+  worldNormal = gameObject.modelMatrixInverse * vec4(vertexNormal.xyz, 0);
 }

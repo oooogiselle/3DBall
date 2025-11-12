@@ -26,7 +26,7 @@ class Scene (
   val woodProgram = Program(gl, vsWood, fsWood)
   val texturedProgram = Program(gl, vsTextured, fsTextured)
   val backgroundProgram = Program(gl, vsQuad, fsBackground)
-  val envmappedProgram = Program(gl, vsTextured, fsEnvmapped)
+  val envmappedProgram = Program(gl, vsWood, fsEnvmapped)
 
   val texturedQuadGeometry = TexturedQuadGeometry(gl)
   val sphereGeometry = SphereGeometry(gl, stacks = 32, slices = 64, radius = 0.5f)
@@ -40,15 +40,21 @@ class Scene (
     this["lightDir"]  ?.set(Vec3(0.0f, -1.0f, -1.0f).normalize())
   }
   
-
-
-  val gameObjects = ArrayList<GameObject>()
-
   val envTexture = TextureCube(gl,
     "media/posx512.jpg", "media/negx512.jpg",
     "media/posy512.jpg", "media/negy512.jpg",
     "media/posz512.jpg", "media/negz512.jpg"
   )  
+  
+  val envMaterial = Material(envmappedProgram).apply {
+      this["envTexture"]?.set(envTexture)
+      this["reflectivity"]?.set(0.35f)
+  }
+
+
+  val gameObjects = ArrayList<GameObject>()
+
+  
 
 
   val jsonLoader = JsonLoader()
@@ -77,19 +83,22 @@ class Scene (
   */
 
   val backgroundMaterial = Material(backgroundProgram)
-  val backgroundMesh = Mesh(backgroundMaterial, texturedQuadGeometry)
-  val woodBall = GameObject(Mesh(woodMaterial, sphereGeometry)).apply {
-    position.set(0f, 0.5f, 0f)
-  }
+
+  val woodSphereMesh    = Mesh(woodMaterial, sphereGeometry)
+  val envSphereMesh     = Mesh(envMaterial,  sphereGeometry)
+  val woodBallGO        = GameObject(woodSphereMesh).apply { position.set(0f, 0.5f, 0f) }
+  val envWoodBallGO     = GameObject(envSphereMesh).apply { position.set(1.2f, 0.5f, 0f) } // optional second object
+  val backgroundMesh    = Mesh(backgroundMaterial, texturedQuadGeometry)
+  val backgroundGO      = GameObject(backgroundMesh)
   
 
   init{
     backgroundMaterial["envTexture"]?.set( this.envTexture )
 
     //gameObjects += GameObject(*slowpokeMeshes)
-    gameObjects += GameObject(backgroundMesh)
-    gameObjects += woodBall
-    println("DEBUG -> " + woodMaterial["lightWoodColor"])
+    //gameObjects += GameObject(backgroundMesh)
+    gameObjects += woodBallGO
+    gameObjects += backgroundGO
   }
 
   val lights = Array<Light>(8) { Light(it) }
@@ -103,6 +112,7 @@ class Scene (
 
   // LABTODO: replace with 3D camera
   val camera = PerspectiveCamera().apply{
+    position.set(0f, 1.0f, 5.0f)
     update()
   }
 

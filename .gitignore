@@ -1,6 +1,7 @@
 .gradle
 build/
 web/
+gradle/
 
 *.sublime-workspace
 Thumbs.db
