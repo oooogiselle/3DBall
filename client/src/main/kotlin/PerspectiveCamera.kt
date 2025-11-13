@@ -79,6 +79,12 @@ class PerspectiveCamera() : UniformProvider("camera") {
       } 
       mouseDelta.set()
     }
+
+    update()
+    ahead = (Vec3(0.0f, 0.0f, -1.0f).xyz0 * rotationMatrix).xyz
+    right = (Vec3(1.0f, 0.0f,  0.0f).xyz0 * rotationMatrix).xyz
+    up    = (Vec3(0.0f, 1.0f,  0.0f).xyz0 * rotationMatrix).xyz    
+
     if("W" in keysPressed) { 
       position += ahead * (speed * dt) 
     } 
@@ -99,9 +105,7 @@ class PerspectiveCamera() : UniformProvider("camera") {
     } 
 
     update()
-    ahead = (Vec3(0.0f, 0.0f, -1.0f).xyz0 * rotationMatrix).xyz
-    right = (Vec3(1.0f, 0.0f,  0.0f).xyz0 * rotationMatrix).xyz
-    up    = (Vec3(0.0f, 1.0f,  0.0f).xyz0 * rotationMatrix).xyz    
+    
   } 
   
   fun mouseDown() { 

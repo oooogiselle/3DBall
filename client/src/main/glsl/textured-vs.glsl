@@ -24,9 +24,10 @@ out vec4 texCoord;
 out vec4 worldNormal;
 
 void main(void) {
-  modelPosition = vertexPosition;
-  worldPosition = vertexPosition * gameObject.modelMatrix;
-  gl_Position = worldPosition * camera.viewProjMatrix;
+  modelPosition = vec4(vertexPosition.xyz, 1.0);
+  worldPosition = gameObject.modelMatrix * vertexPosition;
+  gl_Position = camera.viewProjMatrix * worldPosition;
+
   texCoord = vertexTexCoord;
-  worldNormal = gameObject.modelMatrixInverse * vec4(vertexNormal.xyz, 0);
+  worldNormal = gameObject.modelMatrixInverse * vec4(vertexNormal.xyz, 0.0);
 }

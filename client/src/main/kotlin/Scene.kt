@@ -20,22 +20,48 @@ class Scene (
   val fsTextured = Shader(gl, GL.FRAGMENT_SHADER, "textured-fs.glsl")
   val fsBackground = Shader(gl, GL.FRAGMENT_SHADER, "background-fs.glsl")
   val fsEnvmapped = Shader(gl, GL.FRAGMENT_SHADER, "envmapped-fs.glsl")
-
+  val vsWood = Shader(gl, GL.VERTEX_SHADER, "wood-vs.glsl")
+  val fsWood = Shader(gl, GL.FRAGMENT_SHADER, "wood-fs.glsl")
+  
+  val woodProgram = Program(gl, vsWood, fsWood)
   val texturedProgram = Program(gl, vsTextured, fsTextured)
   val backgroundProgram = Program(gl, vsQuad, fsBackground)
-  val envmappedProgram = Program(gl, vsTextured, fsEnvmapped)
+  val envmappedProgram = Program(gl, vsWood, fsEnvmapped)
 
   val texturedQuadGeometry = TexturedQuadGeometry(gl)
+  val sphereGeometry = SphereGeometry(gl, stacks = 32, slices = 64, radius = 0.5f)
 
-  val gameObjects = ArrayList<GameObject>()
+  val woodMaterial = Material(woodProgram).apply {
+    this["lightWoodColor"]?.set(Vec3(0.78f, 0.59f, 0.36f))
+    this["darkWoodColor"] ?.set(Vec3(0.46f, 0.29f, 0.17f))
 
+    this["stripeFreq"]?.set(6.0f)
+    this["ambient"]   ?.set(Vec3(0.15f,0.15f,0.15f))
+    this["lightDir"]  ?.set(Vec3(0.0f, -1.0f, -1.0f).normalize())
+    this["noiseFreq"]?.set(10.0f)   // adjust for more/less detail
+    this["noiseAmp"]?.set(0.3f)     // adjust for stronger/weaker perturbation
+    this["noiseExp"]?.set(2.0f)     // adjust for sharper/softer noise
+  }
+  
   val envTexture = TextureCube(gl,
     "media/posx512.jpg", "media/negx512.jpg",
     "media/posy512.jpg", "media/negy512.jpg",
     "media/posz512.jpg", "media/negz512.jpg"
   )  
+  
+  val envMaterial = Material(envmappedProgram).apply {
+      this["envTexture"]?.set(envTexture)
+      this["reflectivity"]?.set(0.35f)
+  }
+
+
+  val gameObjects = ArrayList<GameObject>()
+
+  
+
 
   val jsonLoader = JsonLoader()
+  /* 
   val slowpokeMeshes = jsonLoader.loadMeshes(gl,
     "media/slowpoke/slowpoke.json",
     Material(texturedProgram).apply{
@@ -57,15 +83,31 @@ class Scene (
       this["envTexture"]?.set(envTexture)
     }
   )
+  */
 
   val backgroundMaterial = Material(backgroundProgram)
-  val backgroundMesh = Mesh(backgroundMaterial, texturedQuadGeometry)
+
+  val woodSphereMesh    = Mesh(woodMaterial, sphereGeometry)
+  val envSphereMesh     = Mesh(envMaterial,  sphereGeometry)
+  val woodBallGO        = GameObject(woodSphereMesh).apply {
+    position.set(0f, 0.5f, 0f) 
+    useOrientationMatrix = true
+    radius = 0.5f 
+    orientationMatrix.set() 
+  }
+  val envWoodBallGO     = GameObject(envSphereMesh).apply { position.set(1.2f, 0.5f, 0f) } // optional second object
+  val backgroundMesh    = Mesh(backgroundMaterial, texturedQuadGeometry)
+  val backgroundGO      = GameObject(backgroundMesh)
+  
 
   init{
     backgroundMaterial["envTexture"]?.set( this.envTexture )
 
-    gameObjects += GameObject(*slowpokeMeshes)
-    gameObjects += GameObject(backgroundMesh)
+    //gameObjects += GameObject(*slowpokeMeshes)
+    //gameObjects += GameObject(backgroundMesh)
+    gameObjects += woodBallGO
+    //woodBallGO.velocity.set(1.0f, 0.0f, 0.0f)  // Roll along X axis
+    gameObjects += backgroundGO
   }
 
   val lights = Array<Light>(8) { Light(it) }
@@ -79,6 +121,7 @@ class Scene (
 
   // LABTODO: replace with 3D camera
   val camera = PerspectiveCamera().apply{
+    position.set(0f, 1.0f, 5.0f)
     update()
   }
 
@@ -114,6 +157,8 @@ class Scene (
     gl.blendFunc(
       GL.SRC_ALPHA,
       GL.ONE_MINUS_SRC_ALPHA)
+    
+    backgroundGO.position.set(camera.position)
 
     gameObjects.forEach{ it.move(dt, t, keysPressed, gameObjects) }
 
