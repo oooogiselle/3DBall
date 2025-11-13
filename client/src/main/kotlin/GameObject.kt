@@ -1,5 +1,6 @@
 import vision.gears.webglmath.*
 
+
 open class GameObject(vararg meshes : Mesh) 
    : UniformProvider("gameObject") {
 
@@ -95,6 +96,8 @@ open class GameObject(vararg meshes : Mesh)
     }
 
     
+
+    
     /* 
     // implement rolling if gameobject uses orientation matrix
     if (useOrientationMatrix && velocity.length() > 0.001f) {
@@ -134,16 +137,12 @@ open class GameObject(vararg meshes : Mesh)
             // Create rotation matrix for this frame's rotation
             val frameRotation = Mat4().rotate(angleThisFrame, angularAxis)
 
-            // DEBUG: Print values
-            console.log("Velocity: ${velocity.x}, ${velocity.y}, ${velocity.z}")
-            console.log("HorizVel: ${horizontalVelocity.x}, ${horizontalVelocity.z}")
-            console.log("AngularAxis: ${angularAxis.x}, ${angularAxis.y}, ${angularAxis.z}")
-            console.log("AngleThisFrame: $angleThisFrame")
             
             // Append rotation
             orientationMatrix *= frameRotation
             //console.log("OrientationMatrix[0]: ${orientationMatrix.storage[0]}, ${orientationMatrix.storage[1]}, ${orientationMatrix.storage[2]}")
         }
+
     }
 
     return true;

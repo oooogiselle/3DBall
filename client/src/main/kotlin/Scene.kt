@@ -38,9 +38,9 @@ class Scene (
     this["stripeFreq"]?.set(6.0f)
     this["ambient"]   ?.set(Vec3(0.15f,0.15f,0.15f))
     this["lightDir"]  ?.set(Vec3(0.0f, -1.0f, -1.0f).normalize())
-    this["noiseFreq"]?.set(10.0f)   // adjust for more/less detail
-    this["noiseAmp"]?.set(0.3f)     // adjust for stronger/weaker perturbation
-    this["noiseExp"]?.set(2.0f)     // adjust for sharper/softer noise
+    this["noiseFreq"]?.set(4.0f)   // adjust for more/less detail
+    this["noiseAmp"]?.set(5.0f)     // adjust for stronger/weaker perturbation
+    this["noiseExp"]?.set(5.0f)     // adjust for sharper/softer noise
   }
   
   val envTexture = TextureCube(gl,
@@ -61,7 +61,7 @@ class Scene (
 
 
   val jsonLoader = JsonLoader()
-  /* 
+  
   val slowpokeMeshes = jsonLoader.loadMeshes(gl,
     "media/slowpoke/slowpoke.json",
     Material(texturedProgram).apply{
@@ -83,7 +83,7 @@ class Scene (
       this["envTexture"]?.set(envTexture)
     }
   )
-  */
+  
 
   val backgroundMaterial = Material(backgroundProgram)
 
@@ -157,8 +157,7 @@ class Scene (
     gl.blendFunc(
       GL.SRC_ALPHA,
       GL.ONE_MINUS_SRC_ALPHA)
-    
-    backgroundGO.position.set(camera.position)
+  
 
     gameObjects.forEach{ it.move(dt, t, keysPressed, gameObjects) }
 
