@@ -32,11 +32,11 @@ open class GameObject(vararg meshes : Mesh)
   }
   fun update() {
     // for rolling objects: use orientation matrix instead of yaw-pitch-roll
-    // first apply rotation, then scale, then translate
     if (useOrientationMatrix) {
-      modelMatrix.set(orientationMatrix).
-        translate(position).
-        scale(scale)
+      modelMatrix.set()
+        .scale(scale)              
+      modelMatrix *= orientationMatrix 
+      modelMatrix.translate(position)
     } else {
       // original behavior for normal non-rolling objects
       modelMatrix.set().
@@ -77,13 +77,18 @@ open class GameObject(vararg meshes : Mesh)
             velocity.x -= pushForce * dt
         }
         
+        // apply gravity
         velocity.set(velocity + gravity * dt)
+
+        // apply friction only to horizontal components
         velocity.x *= friction
         velocity.z *= friction
     }
 
+    // updating position based on velocity
     position.set(position + velocity * dt)
 
+    // ground collision & bounce
     if (position.y < groundY) {
         position.y = groundY
         velocity.y = 0f  // Stop vertical movement
@@ -113,7 +118,7 @@ open class GameObject(vararg meshes : Mesh)
      
     
     // implement rolling if gameobject uses orientation matrix
-    if (useOrientationMatrix) {
+    if (useOrientationMatrix && position.y <= groundY + 0.01f) {
         // Only use horizontal velocity for rolling (ignore Y)
         val horizontalVelocity = Vec3(velocity.x, 0f, velocity.z)
         
@@ -136,7 +141,7 @@ open class GameObject(vararg meshes : Mesh)
             console.log("AngleThisFrame: $angleThisFrame")
             
             // Append rotation
-            orientationMatrix.premul(frameRotation)
+            orientationMatrix *= frameRotation
             //console.log("OrientationMatrix[0]: ${orientationMatrix.storage[0]}, ${orientationMatrix.storage[1]}, ${orientationMatrix.storage[2]}")
         }
     }
