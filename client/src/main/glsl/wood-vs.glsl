@@ -13,15 +13,15 @@ uniform struct {
 
 uniform struct {
   mat4 viewProjMatrix;
-  vec3 position;           // not used here
+  vec3 position;           
 } camera;
 
 uniform struct {
   float time;
 } scene;
 
-out vec4 modelPosition;    // EXACT name/type used by wood-fs.glsl
-out vec4 worldNormal;          // EXACT name/type used by wood-fs.glsl
+out vec4 modelPosition;    
+out vec4 worldNormal;          
 out vec4 worldPosition;
 out vec4 texCoord;
 

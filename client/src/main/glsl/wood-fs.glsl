@@ -17,20 +17,10 @@ uniform struct {
   vec3 lightDir;
   float noiseFreq;    // frequency of noise
   float noiseAmp;     // amplitude of noise perturbation
-  float noiseExp;     // exponent shaping (>=1)
+  float noiseExp;     // exponent shaping 
 
 } material;
 
-float snoise(vec3 r) {
-  vec3 s = vec3(7502, 22777, 4767);
-  float f = 0.0;
-  for(int i=0; i<16; i++) {
-    f += sin( dot(s - vec3(32768, 32768, 32768), r)
-                                 / 65536.0);
-    s = mod(s, 32768.0) * 2.0 + floor(s / 32768.0);
-  }
-  return f / 32.0 + 0.5;
-}
 float noise(vec3 r) {
   uvec3 s = uvec3(
     0x1D4E1D4E,
@@ -90,19 +80,4 @@ void main(void) {
   fragmentColor = vec4(base * (material.ambient + ndl), 1.0);
 
 
-/*
-  float w = fract( (modelPosition.x + modelPosition.z) * material.stripeFreq
-   + pow(
-     noise(modelPosition.xyz * material.noiseFreq),
-     material.noiseExp)
-     * material.noiseAmp
-  );
-
-  vec3 base = mix(material.lightWoodColor, material.darkWoodColor, w);
-
-  vec3 normal = normalize(worldNormal.xyz);
-  float ndl = max(dot(normal, -normalize(material.lightDir)), 0.0);
-
-  fragmentColor = vec4(base * (material.ambient + ndl), 1.0);
-  */
 }
