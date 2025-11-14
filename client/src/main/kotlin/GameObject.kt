@@ -95,9 +95,6 @@ open class GameObject(vararg meshes : Mesh)
         velocity.y = 0f  // Stop vertical movement
     }
 
-    
-
-    
     /* 
     // implement rolling if gameobject uses orientation matrix
     if (useOrientationMatrix && velocity.length() > 0.001f) {

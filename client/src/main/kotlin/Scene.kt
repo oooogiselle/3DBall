@@ -32,15 +32,29 @@ class Scene (
   val sphereGeometry = SphereGeometry(gl, stacks = 32, slices = 64, radius = 0.5f)
 
   val woodMaterial = Material(woodProgram).apply {
-    this["lightWoodColor"]?.set(Vec3(0.78f, 0.59f, 0.36f))
-    this["darkWoodColor"] ?.set(Vec3(0.46f, 0.29f, 0.17f))
+    // this["lightWoodColor"]?.set(Vec3(0.78f, 0.59f, 0.36f))
+    // this["darkWoodColor"] ?.set(Vec3(0.46f, 0.29f, 0.17f))
 
-    this["stripeFreq"]?.set(6.0f)
-    this["ambient"]   ?.set(Vec3(0.15f,0.15f,0.15f))
-    this["lightDir"]  ?.set(Vec3(0.0f, -1.0f, -1.0f).normalize())
-    this["noiseFreq"]?.set(4.0f)   // adjust for more/less detail
-    this["noiseAmp"]?.set(5.0f)     // adjust for stronger/weaker perturbation
-    this["noiseExp"]?.set(5.0f)     // adjust for sharper/softer noise
+    // this["stripeFreq"]?.set(4.0f)
+    // this["ambient"]   ?.set(Vec3(0.15f,0.15f,0.15f))
+    // this["lightDir"]  ?.set(Vec3(0.0f, -1.0f, -1.0f).normalize())
+    // this["noiseFreq"]?.set(6.0f)   // adjust for more/less detail
+    // this["noiseAmp"]?.set(5.0f)     // adjust for stronger/weaker perturbation
+    // this["noiseExp"]?.set(5.0f)     // adjust for sharper/softer noise
+
+    this["lightWoodColor"]?.set(Vec3(0.82f, 0.65f, 0.45f))  // Warmer, lighter tone
+    this["darkWoodColor"] ?.set(Vec3(0.35f, 0.22f, 0.12f))  // Richer, deeper brown
+    // Stripe frequency: 3-5 looks most natural for wood grain rings
+    this["stripeFreq"]?.set(4.5f)  // Moderate grain spacing
+    // Slightly higher ambient for better visibility
+    this["ambient"]?.set(Vec3(0.2f, 0.2f, 0.2f))
+    // Light from above-front for natural appearance
+    this["lightDir"]?.set(Vec3(0.3f, -1.0f, -0.5f).normalize())
+    // Noise settings for organic grain variation
+    this["noiseFreq"]?.set(8.0f)    // Fine detail in the grain
+    this["noiseAmp"]?.set(0.8f)     // Moderate perturbation (not too chaotic)
+    this["noiseExp"]?.set(2.5f)     // Slightly softer transitions
+
   }
   
   val envTexture = TextureCube(gl,
